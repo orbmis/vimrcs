@@ -1,0 +1,153 @@
+set nocompatible              " be iMproved, required
+filetype off                  " required
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+"call vundle#begin('~/some/path/here')
+
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+
+Plugin 'scrooloose/nerdtree'
+Plugin 'scrooloose/syntastic'
+Plugin 'pangloss/vim-javascript'
+Plugin 'kien/ctrlp.vim'
+Plugin 'altercation/vim-colors-solarized'
+Plugin 'leafgarland/typescript-vim'
+Plugin 'Shougo/vimproc.vim'
+Plugin 'Quramy/tsuquyomi'
+Plugin 'majutsushi/tagbar'
+Plugin 'gabesoft/vim-ags'
+Plugin 'itchyny/lightline.vim'
+Plugin 'tpope/vim-fugitive'
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
+" To ignore plugin indent changes, instead use:
+"filetype plugin on
+"
+" Brief help
+" :PluginList       - lists configured plugins
+" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+" :PluginSearch foo - searches for foo; append `!` to refresh local cache
+" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
+"
+" see :h vundle for more details or wiki for FAQ
+" Put your non-Plugin stuff after this line
+
+let g:lightline = {
+  \ 'colorscheme': 'solarized'
+\ }
+
+let g:tagbar_type_typescript = {
+  \ 'ctagstype': 'typescript',
+  \ 'kinds': [
+    \ 'c:classes',
+    \ 'n:modules',
+    \ 'f:functions',
+    \ 'v:variables',
+    \ 'v:varlambdas',
+    \ 'm:members',
+    \ 'i:interfaces',
+    \ 'e:enums',
+  \ ]
+\ }
+
+let g:ctrlp_custom_ignore = {
+  \ 'dir': '\v[\/](\.git|node_modules|reports|target|\.settings|webapp|\.sass-cache|bower_components|build)$',
+  \ 'file': '\v\.(exe|so|dll)$',
+  \ 'link': 'some_bad_symbolic_links',
+  \ }
+
+set statusline=%t       "tail of the filename
+" set statusline+=[%{strlen(&fenc)?&fenc:'none'}, "file encoding
+" set statusline+=%{&ff}] "file format
+set statusline+=%h      "help file flag
+set statusline+=%r      "read only flag
+set statusline+=%y      "filetype
+set statusline+=%m      "modified flag
+set statusline+=%=      "left/right separator
+set statusline+=%c,     "cursor column
+set statusline+=%l/%L   "cursor line/total lines
+set statusline+=\ %P    "percent through file
+
+let g:syntastic_enable_signs = 1
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_loc_list_height = 5
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+" let g:syntastic_javascript_checkers = ['eslint']
+let g:syntastic_javascript_checkers = ['tsuquyomi']
+
+let g:syntastic_error_symbol = 'x'
+let g:syntastic_style_error_symbol = 'x'
+let g:syntastic_warning_symbol = '!'
+let g:syntastic_style_warning_symbol = 'o'
+
+highlight link SyntasticErrorSign SignColumn
+highlight link SyntasticWarningSign SignColumn
+highlight link SyntasticStyleErrorSign SignColumn
+highlight link SyntasticStyleWarningSign SignColumn
+
+syntax on
+
+set mouse=a
+set nowrap
+set ruler
+set number
+set hlsearch
+set expandtab
+set shiftwidth=2
+set softtabstop=2
+set background=dark
+set smartindent
+
+:iabbrev </ </<C-X><C-O>
+
+if has("gui_running")
+  colorscheme solarized
+
+  set guifont=Consolas:h10:cANSI:qDRAFT
+  set guioptions=egmrLt
+  set guioptions-=m
+  set guioptions-=r  "remove right-hand scroll bar
+  set guioptions-=L  "remove left-hand scroll bar
+  set sessionoptions+=resize,winpos
+
+  autocmd VIMEnter * :source C:\Users\username\session.vim
+  autocmd VIMLeave * :mksession! C:\Users\username\session.vim
+  autocmd FileType typescript setlocal balloonexpr=tsuquyomi#balloonexpr()
+
+  autocmd VimEnter * NERDTree BookmarkName
+  let g:NERDTreeWinSize=40
+endif
+
+" for putty console vim
+hi StatusLine      ctermfg=238 ctermbg=16
+hi StatusLineNC    ctermfg=grey ctermbg=black
+hi VertSplit       ctermfg=244 ctermbg=232   cterm=bold
+
+set dir=$HOME/.vim/tmp/swap
+if !isdirectory(&dir) | call mkdir(&dir, 'p', 0700) | endif
+
+" autocmd FileType typescript nmap <buffer> <Leader>t : <C-u>echo tsuquyomi#hint()<CR>
+
+:map <F3> :set ballooneval<CR>
+nmap <F8> :TagbarToggle<CR>
+
+" enter fullscreen (needs to be on main monitor, and also needs to the following installed:
+" https://www.vim.org/scripts/script.php?script_id=2596
+map <F11> <Esc>:call libcallnr("gvimfullscreen.dll", "ToggleFullScreen", 0)<CR>
+
+" make sure quickfix window always wraps contents
+augroup quickfix
+    autocmd!
+    autocmd FileType qf setlocal wrap
+augroup END
+
+" ensure quickfix window always appears at bottom of screen and full-width
+:autocmd FileType qf wincmd J
